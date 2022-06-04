@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { getUsuarios } from '../controllers/users';
+import { getProducts } from '../controllers/products';
 
 const router = Router();
 
-router.get('/', getUsuarios);
+router.get('/', getProducts);
 
 module.exports = router;

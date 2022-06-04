@@ -1,5 +1,2 @@
-export interface IUser {
-    id: number;
-    avaliableVideoTime: number;
-    usedVideoTime: number;
-};
+export * from './user';
+export * from './product';

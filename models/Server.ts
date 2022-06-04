@@ -1,13 +1,14 @@
 import express, { Application } from 'express';
-import userRouter from '../routes/user';
 import cors from 'cors';
+const { userRouter, productRouter } = require('../routes');
 const { dbConnection } = require('../database/config');
 
 class Server {
   private app: Application;
   private port: string;
   private paths = {
-    users: '/api/user'
+    users: '/api/user',
+    products: '/api/products'
   };
 
   constructor () {
@@ -27,6 +28,7 @@ class Server {
 
   routes () {
     this.app.use(this.paths.users, userRouter);
+    this.app.use(this.paths.products, productRouter);
   }
 
   listen () {

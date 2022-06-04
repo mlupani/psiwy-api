@@ -1,7 +1,7 @@
 
 import { Schema, model } from 'mongoose';
 
-const UserSchema = new Schema({
+const ProductSchema = new Schema({
   avaliableVideoTime: {
     type: Number
     // required: [true, 'El nombre es obligatorio']
@@ -12,10 +12,10 @@ const UserSchema = new Schema({
   }
 });
 
-UserSchema.methods.toJSON = function () {
-  const { __v, _id, ...user } = this.toObject();
-  user.id = _id;
-  return user;
+ProductSchema.methods.toJSON = function () {
+  const { __v, _id, ...product } = this.toObject();
+  product.id = _id;
+  return product;
 };
 
-module.exports = model('User', UserSchema);
+module.exports = model('Product', ProductSchema);
