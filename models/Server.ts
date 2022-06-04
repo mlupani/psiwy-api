@@ -1,7 +1,7 @@
 import express, { Application } from 'express';
 import userRouter from '../routes/user';
 import cors from 'cors';
-// import db from '../database/config';
+const { dbConnection } = require('../database/config');
 
 class Server {
   private app: Application;
@@ -14,21 +14,10 @@ class Server {
     this.app = express();
     this.port = process.env.PORT || '8000';
 
-    // this.dbConnection();
+    dbConnection();
     this.middlewares();
     this.routes();
   }
-
-  /*
-  async dbConnection () {
-    try {
-      await db.authenticate();
-      console.log('Base de datos online');
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
-  */
 
   middlewares () {
     this.app.use(cors());
