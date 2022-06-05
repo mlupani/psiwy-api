@@ -1,6 +1,6 @@
 import express, { Application } from 'express';
 import cors from 'cors';
-const { userRouter, productRouter } = require('../routes');
+const { userRouter, productRouter, videoRouter } = require('../routes');
 const { dbConnection } = require('../database/config');
 
 class Server {
@@ -8,7 +8,8 @@ class Server {
   private port: string;
   private paths = {
     users: '/api/user',
-    products: '/api/products'
+    products: '/api/products',
+    videos: '/api/videos'
   };
 
   constructor () {
@@ -23,12 +24,14 @@ class Server {
   middlewares () {
     this.app.use(cors());
     this.app.use(express.json());
+    this.app.use(express.urlencoded());
     this.app.use(express.static('public'));
   }
 
   routes () {
     this.app.use(this.paths.users, userRouter);
     this.app.use(this.paths.products, productRouter);
+    this.app.use(this.paths.videos, videoRouter);
   }
 
   listen () {
