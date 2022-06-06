@@ -1,6 +1,6 @@
 import express, { Application } from 'express';
 import cors from 'cors';
-const { userRouter, productRouter, videoRouter } = require('../routes');
+const { userRouter, productRouter, videoRouter, authRouter } = require('../routes');
 const { dbConnection } = require('../database/config');
 
 class Server {
@@ -9,7 +9,8 @@ class Server {
   private paths = {
     users: '/api/user',
     products: '/api/products',
-    videos: '/api/videos'
+    videos: '/api/videos',
+    auth: '/api/auth'
   };
 
   constructor () {
@@ -32,6 +33,7 @@ class Server {
     this.app.use(this.paths.users, userRouter);
     this.app.use(this.paths.products, productRouter);
     this.app.use(this.paths.videos, videoRouter);
+    this.app.use(this.paths.auth, authRouter);
   }
 
   listen () {
