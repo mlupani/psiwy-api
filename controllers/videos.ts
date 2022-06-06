@@ -11,13 +11,13 @@ export const getVideos = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: 'Error al obtener los videos'
+      message: 'Error on get videos'
     });
   }
 };
 
 export const postVideos = async (req: Request, res: Response) => {
-  // TODO: guardar en storage
+  // TODO: save on storage and validate the user can upload the video (duration)
   try {
     const { title, description, url, duration, authorID, custodians, receptors } = req.body;
     const video = new Video({
@@ -36,12 +36,13 @@ export const postVideos = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: 'Error al crear el video'
+      message: 'Error on create video'
     });
   }
 };
 
 export const updateVideo = async (req: Request, res: Response) => {
+  // TODO: Check the video is not delivered yet
   try {
     const { title, description, url, duration, authorID, custodians, receptors } = req.body;
     const video = await Video.findByIdAndUpdate(req.params.id, {
@@ -59,7 +60,7 @@ export const updateVideo = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: 'Error al actualizar el video'
+      message: 'Error on update video'
     });
   }
 };
@@ -73,7 +74,7 @@ export const deleteVideo = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: 'Error al eliminar el video'
+      message: 'Error on delete video'
     });
   }
 };

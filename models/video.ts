@@ -4,34 +4,34 @@ import { Schema, model } from 'mongoose';
 const videoSchema = new Schema({
   authorID: {
     type: Number,
-    required: [true, 'El autor es obligatorio']
+    required: [true, 'The author is required']
   },
   duration: {
     type: Number,
-    required: [true, 'La duracion es obligatoria']
+    required: [true, 'The duration is required']
   },
   url: {
     type: String,
-    required: [true, 'La url es obligatoria']
+    required: [true, 'The uri is required']
   },
   title: {
     type: String,
-    required: [true, 'El titulo es obligatorio']
+    required: [true, 'The title is required']
   },
   description: {
     type: String,
-    required: [true, 'La descripcion es obligatoria']
+    required: [true, 'The description is required']
   },
   custodians: [
     {
       type: Number,
-      required: [true, 'El custodio es obligatorio']
+      required: [true, 'The custodians are required']
     }
   ],
   receptors: [
     {
       type: Number,
-      required: [true, 'El receptor es obligatorio']
+      required: [true, 'The receptors are required']
     }
   ],
   delivered: {
