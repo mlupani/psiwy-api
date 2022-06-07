@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { getProducts } from '../controllers/products';
+import { report } from '../controllers/report';
 const { validarJWT } = require('../middlewares');
 
 const router = Router();
 
-router.get('/', [
+router.post('/', [
   validarJWT
-], getProducts);
+], report);
 
 module.exports = router;

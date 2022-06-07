@@ -3,7 +3,7 @@ const { check } = require('express-validator');
 
 const { validarCampos, validarJWT } = require('../middlewares');
 
-const { login, validarTokenUsuario } = require('../controllers/auth');
+const { login, validateTokenUser } = require('../controllers/auth');
 
 const router = Router();
 
@@ -15,6 +15,6 @@ router.post('/login', [
 
 router.get('/', [
   validarJWT
-], validarTokenUsuario);
+], validateTokenUser);
 
 module.exports = router;

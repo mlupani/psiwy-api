@@ -1,6 +1,6 @@
 import express, { Application } from 'express';
 import cors from 'cors';
-const { userRouter, productRouter, videoRouter, authRouter } = require('../routes');
+const { userRouter, productRouter, videoRouter, authRouter, paymentRouter, reportRouter } = require('../routes');
 const { dbConnection } = require('../database/config');
 
 class Server {
@@ -10,7 +10,9 @@ class Server {
     users: '/api/user',
     products: '/api/products',
     videos: '/api/videos',
-    auth: '/api/auth'
+    auth: '/api/auth',
+    payment: '/api/payment',
+    report: '/api/date'
   };
 
   constructor () {
@@ -34,6 +36,8 @@ class Server {
     this.app.use(this.paths.products, productRouter);
     this.app.use(this.paths.videos, videoRouter);
     this.app.use(this.paths.auth, authRouter);
+    this.app.use(this.paths.auth, paymentRouter);
+    this.app.use(this.paths.auth, reportRouter);
   }
 
   listen () {
