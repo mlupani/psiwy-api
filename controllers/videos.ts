@@ -1,6 +1,9 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { IVideo } from '../interfaces';
 const { Video } = require('../models');
+const { Storage } = require('@google-cloud/storage');
+const { format } = require('util');
+const { getVideoDurationInSeconds } = require('get-video-duration');
 
 export const getVideos = async (req: Request, res: Response) => {
   try {
@@ -16,23 +19,55 @@ export const getVideos = async (req: Request, res: Response) => {
   }
 };
 
-export const postVideos = async (req: Request, res: Response) => {
+export const postVideos = async (req: Request, res: Response, next: NextFunction) => {
   // TODO: save on storage and validate the user can upload the video (duration)
   try {
-    const { title, description, url, duration, authorID, custodians, receptors } = req.body;
-    const video = new Video({
-      authorID,
-      duration,
-      url,
-      title,
-      description,
-      custodians,
-      receptors
+    const { title, description, authorID, custodians, receptors } = req.body;
+    let url = '';
+    let duration = 0;
+
+    if (!req.file) {
+      res.status(400).send('No file uploaded.');
+      return;
+    }
+
+    console.log(req.file.path);
+
+    const storage = new Storage();
+    const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
+
+    const blob = bucket.file(req.file.originalname);
+    const blobStream = blob.createWriteStream({
+      resumable: false
     });
-    const newVideo: Promise<IVideo> = await video.save();
-    res.json({
-      newVideo
+
+    blobStream.on('error', (err: any) => {
+      next(err);
     });
+
+    blobStream.on('finish', async () => {
+      url = format(
+        `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+      );
+
+      duration = await getVideoDurationInSeconds(url);
+
+      const video = new Video({
+        authorID,
+        duration: (duration * 1000).toFixed(2),
+        url,
+        title,
+        description,
+        custodians,
+        receptors
+      });
+      const newVideo: Promise<IVideo> = await video.save();
+      res.json({
+        newVideo
+      });
+    });
+
+    blobStream.end(req.file.buffer);
   } catch (error) {
     console.log(error);
     res.status(500).json({

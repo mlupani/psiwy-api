@@ -3,3 +3,4 @@ export * from './product';
 export * from './video';
 export * from './custodian';
 export * from './receptor';
+export * from './multer';
