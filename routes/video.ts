@@ -19,8 +19,6 @@ router.post('/', multer.single('file'), postVideos);
 router.put('/:id', [
   validarJWT
 ], updateVideo);
-router.delete('/:id', [
-  validarJWT
-], deleteVideo);
+router.delete('/:id', deleteVideo);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { IVideo } from '../interfaces';
-const { Video } = require('../models');
+const { Video, User } = require('../models');
 const { Storage } = require('@google-cloud/storage');
 const { format } = require('util');
 const { getVideoDurationInSeconds } = require('get-video-duration');
@@ -20,23 +20,30 @@ export const getVideos = async (req: Request, res: Response) => {
 };
 
 export const postVideos = async (req: Request, res: Response, next: NextFunction) => {
-  // TODO: save on storage and validate the user can upload the video (duration)
   try {
     const { title, description, authorID, custodians, receptors } = req.body;
     let url = '';
     let duration = 0;
+    const userId = '629b8e33602c1e936e51371a';
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: 'User not found'
+      });
+    }
+
+    const avaliableVideoTime = user.avaliableVideoTime;
 
     if (!req.file) {
       res.status(400).send('No file uploaded.');
       return;
     }
 
-    console.log(req.file.path);
-
     const storage = new Storage();
     const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
 
-    const blob = bucket.file(req.file.originalname);
+    const blob = bucket.file(title);
     const blobStream = blob.createWriteStream({
       resumable: false
     });
@@ -51,10 +58,17 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
       );
 
       duration = await getVideoDurationInSeconds(url);
+      const durationInMiliseconds = duration * 1000;
+      if (durationInMiliseconds > avaliableVideoTime) {
+        await storage.bucket(process.env.GCLOUD_STORAGE_BUCKET).file(title).delete();
+        return res.status(400).json({
+          error: 'Video duration is too long for user time limit'
+        });
+      }
 
       const video = new Video({
         authorID,
-        duration: (duration * 1000).toFixed(2),
+        duration: durationInMiliseconds.toFixed(2),
         url,
         title,
         description,
@@ -62,6 +76,12 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
         receptors
       });
       const newVideo: Promise<IVideo> = await video.save();
+
+      // update user new avaliableVideoTime
+      const newAvaliableVideoTime = avaliableVideoTime - durationInMiliseconds;
+      await User.findByIdAndUpdate(userId, {
+        avaliableVideoTime: newAvaliableVideoTime.toFixed(2)
+      });
       res.json({
         newVideo
       });
@@ -103,6 +123,8 @@ export const updateVideo = async (req: Request, res: Response) => {
 export const deleteVideo = async (req: Request, res: Response) => {
   try {
     const video = await Video.findByIdAndDelete(req.params.id);
+    const storage = new Storage();
+    await storage.bucket(process.env.GCLOUD_STORAGE_BUCKET).file(video.title).delete();
     res.json({
       video
     });
