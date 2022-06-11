@@ -39,8 +39,9 @@ const videoSchema = new Schema({
     default: false
   },
   deliveryDate: {
-    type: Boolean,
-    default: false
+    type: Date,
+    default: false,
+    required: false
   }
 }, {
   timestamps: true

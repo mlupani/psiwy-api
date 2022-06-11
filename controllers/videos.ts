@@ -97,10 +97,17 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
 };
 
 export const updateVideo = async (req: Request, res: Response) => {
-  // TODO: Check the video is not delivered yet
   try {
     const { title, description, url, duration, authorID, custodians, receptors } = req.body;
-    const video = await Video.findByIdAndUpdate(req.params.id, {
+    const video = await Video.findById(req.params.id);
+
+    if (video.delivered === true) {
+      return res.status(400).json({
+        message: 'Video is already delivered'
+      });
+    }
+
+    const videoUpdate = await Video.findByIdAndUpdate(req.params.id, {
       title,
       description,
       url,
@@ -110,7 +117,7 @@ export const updateVideo = async (req: Request, res: Response) => {
       receptors
     }, { new: true });
     res.json({
-      video
+      videoUpdate
     });
   } catch (error) {
     console.log(error);
