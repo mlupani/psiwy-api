@@ -83,12 +83,21 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
         const cron = require('node-cron');
         const mins = deliveryDate.substring(14, 16);
         const hour = deliveryDate.substring(11, 13);
-        const day = deliveryDate.substring(8, 10);
-        const month = deliveryDate.substring(5, 7);
-        cron.schedule('0 29 16 12 6', () => {
+        const day = deliveryDate.substring(0, 2);
+        const month = deliveryDate.substring(3, 5);
+        cron.schedule(`0 ${mins} ${hour} ${day} ${month}`, () => {
           console.log('running a task on delivery date');
-        }
-        , { scheduled: true, timezone: 'America/Buenos_Aires' });
+          /*
+          const params = {
+              id: newVideo.id,
+          };
+          const options = {
+              method: 'POST',
+              body: JSON.stringify( params )
+          };
+          */
+          // fetch(`https://localhost:${port}/api/date`, options)
+        }, { scheduled: true, timezone: 'America/Buenos_Aires' });
       }
 
       // update user new avaliableVideoTime

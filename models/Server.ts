@@ -36,8 +36,8 @@ class Server {
     this.app.use(this.paths.products, productRouter);
     this.app.use(this.paths.videos, videoRouter);
     this.app.use(this.paths.auth, authRouter);
-    this.app.use(this.paths.auth, paymentRouter);
-    this.app.use(this.paths.auth, reportRouter);
+    this.app.use(this.paths.payment, paymentRouter);
+    this.app.use(this.paths.report, reportRouter);
   }
 
   listen () {
