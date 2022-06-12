@@ -21,7 +21,7 @@ export const getVideos = async (req: Request, res: Response) => {
 
 export const postVideos = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { title, description, authorID, custodians, receptors } = req.body;
+    const { title, description, authorID, custodians, receptors, deliveryDate = null } = req.body;
     let url = '';
     let duration = 0;
     const userId = '629b8e33602c1e936e51371a';
@@ -73,9 +73,23 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
         title,
         description,
         custodians,
-        receptors
+        receptors,
+        deliveryDate
       });
       const newVideo: Promise<IVideo> = await video.save();
+
+      // if deliveryDate is not null, make a cronjob to notify the event
+      if (deliveryDate) {
+        const cron = require('node-cron');
+        const mins = deliveryDate.substring(14, 16);
+        const hour = deliveryDate.substring(11, 13);
+        const day = deliveryDate.substring(8, 10);
+        const month = deliveryDate.substring(5, 7);
+        cron.schedule('0 29 16 12 6', () => {
+          console.log('running a task on delivery date');
+        }
+        , { scheduled: true, timezone: 'America/Buenos_Aires' });
+      }
 
       // update user new avaliableVideoTime
       const newAvaliableVideoTime = avaliableVideoTime - durationInMiliseconds;

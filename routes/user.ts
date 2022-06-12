@@ -1,11 +1,9 @@
 import { Router } from 'express';
 import { getUsuarios } from '../controllers/users';
-const { validarJWT } = require('../middlewares');
+// const { validarJWT } = require('../middlewares');
 
 const router = Router();
 
-router.get('/', [
-  validarJWT
-], getUsuarios);
+router.get('/', getUsuarios);
 
 module.exports = router;

@@ -40,7 +40,7 @@ const videoSchema = new Schema({
   },
   deliveryDate: {
     type: Date,
-    default: false,
+    default: null,
     required: false
   }
 }, {
