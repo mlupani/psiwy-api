@@ -67,6 +67,12 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
         });
       }
 
+      const mins = deliveryDate.substring(14, 16);
+      const hour = deliveryDate.substring(11, 13);
+      const day = deliveryDate.substring(0, 2);
+      const month = deliveryDate.substring(3, 5);
+      const year = deliveryDate.substring(6, 10);
+
       const video = new Video({
         authorID,
         duration: durationInMiliseconds.toFixed(2),
@@ -74,24 +80,23 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
         title,
         description,
         custodians,
-        receptors
-        // deliveryDate
+        receptors,
+        deliveryDate: deliveryDate !== null ? year + '-' + month + '-' + day + 'T' + hour + ':' + mins + ':00.000Z' : null
       });
       const newVideo: IVideo = await video.save();
 
       // if deliveryDate is not null, make a cronjob to notify the event
       if (deliveryDate) {
         const cron = require('node-cron');
-        const mins = deliveryDate.substring(14, 16);
-        const hour = deliveryDate.substring(11, 13);
-        const day = deliveryDate.substring(0, 2);
-        const month = deliveryDate.substring(3, 5);
         cron.schedule(`0 ${mins} ${hour} ${day} ${month} *`, () => {
           const params = {
             id: newVideo.id
           };
           const options = {
             method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
             body: JSON.stringify(params)
           };
           fetch(`http://localhost:${process.env.PORT}/api/date`, options);

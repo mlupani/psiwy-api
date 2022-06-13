@@ -22,18 +22,14 @@ const videoSchema = new Schema({
     type: String,
     required: [true, 'The description is required']
   },
-  custodians: [
-    {
-      type: Number,
-      required: [true, 'The custodians are required']
-    }
-  ],
-  receptors: [
-    {
-      type: Number,
-      required: [true, 'The receptors are required']
-    }
-  ],
+  custodians: [{
+    email: String,
+    userName: String
+  }],
+  receptors: [{
+    email: String,
+    userName: String
+  }],
   delivered: {
     type: Boolean,
     default: false

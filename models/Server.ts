@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import cors from 'cors';
 const { userRouter, productRouter, videoRouter, authRouter, paymentRouter, reportRouter } = require('../routes');
 const { dbConnection } = require('../database/config');
+const bodyParser = require('body-parser');
 
 class Server {
   private app: Application;
@@ -26,18 +27,21 @@ class Server {
 
   middlewares () {
     this.app.use(cors());
+    this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());
-    this.app.use(express.urlencoded());
+    this.app.use(bodyParser.urlencoded({
+      extended: true
+    }));
     this.app.use(express.static('public'));
   }
 
   routes () {
+    this.app.use(this.paths.report, reportRouter);
     this.app.use(this.paths.users, userRouter);
     this.app.use(this.paths.products, productRouter);
     this.app.use(this.paths.videos, videoRouter);
     this.app.use(this.paths.auth, authRouter);
     this.app.use(this.paths.payment, paymentRouter);
-    this.app.use(this.paths.report, reportRouter);
   }
 
   listen () {
