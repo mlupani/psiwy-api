@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { IVideo } from '../interfaces';
+const fetch = require('node-fetch');
 const { Video, User } = require('../models');
 const { Storage } = require('@google-cloud/storage');
 const { format } = require('util');
@@ -73,10 +74,10 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
         title,
         description,
         custodians,
-        receptors,
-        deliveryDate
+        receptors
+        // deliveryDate
       });
-      const newVideo: Promise<IVideo> = await video.save();
+      const newVideo: IVideo = await video.save();
 
       // if deliveryDate is not null, make a cronjob to notify the event
       if (deliveryDate) {
@@ -85,18 +86,15 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
         const hour = deliveryDate.substring(11, 13);
         const day = deliveryDate.substring(0, 2);
         const month = deliveryDate.substring(3, 5);
-        cron.schedule(`0 ${mins} ${hour} ${day} ${month}`, () => {
-          console.log('running a task on delivery date');
-          /*
+        cron.schedule(`0 ${mins} ${hour} ${day} ${month} *`, () => {
           const params = {
-              id: newVideo.id,
+            id: newVideo.id
           };
           const options = {
-              method: 'POST',
-              body: JSON.stringify( params )
+            method: 'POST',
+            body: JSON.stringify(params)
           };
-          */
-          // fetch(`https://localhost:${port}/api/date`, options)
+          fetch(`http://localhost:${process.env.PORT}/api/date`, options);
         }, { scheduled: true, timezone: 'America/Buenos_Aires' });
       }
 

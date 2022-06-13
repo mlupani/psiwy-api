@@ -1,6 +1,7 @@
 import { ICustodian, IReceptor } from './';
 
 export interface IVideo {
+    id: string;
     authorID: number;
     duration: number;
     url:string;
