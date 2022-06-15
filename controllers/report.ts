@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 const { Video } = require('../models');
 const sendgrid = require('@sendgrid/mail');
+const { sendMail } = require('../helpers/send-mail');
 
 export const report = async (req: Request, res: Response) => {
   try {
@@ -11,23 +12,7 @@ export const report = async (req: Request, res: Response) => {
     sendgrid.setApiKey(process.env.SENGRID_API_KEY);
 
     receptors.forEach(({ email, userName }: {email: string, userName: string}) => {
-      const msg = {
-        to: email,
-        from: 'mlupani2@gmail.com',
-        subject: `Aviso de evento ${userName}`,
-        text: `el video es ${video.title} y su id es ${video.id}`
-      };
-      sendgrid
-        .send(msg)
-        .then((resp: any) => {
-          console.log('Email sent\n', resp);
-          return res.json({
-            message: 'Email sent'
-          });
-        })
-        .catch((error: any) => {
-          res.status(500).json({ message: error });
-        });
+      sendMail(email, `Aviso de evento ${userName}`, `el video es ${video.title} y su id es ${video.id}, su url publica es ${video.url}`);
     });
   } catch (error) {
     res.status(500).json({ message: error });

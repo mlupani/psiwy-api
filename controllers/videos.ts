@@ -3,8 +3,10 @@ import { IVideo } from '../interfaces';
 const fetch = require('node-fetch');
 const { Video, User } = require('../models');
 const { Storage } = require('@google-cloud/storage');
+// const { CloudTasksClient } = require('@google-cloud/tasks');
 const { format } = require('util');
 const { getVideoDurationInSeconds } = require('get-video-duration');
+const { sendMail } = require('../helpers/send-mail');
 
 export const getVideos = async (req: Request, res: Response) => {
   try {
@@ -85,6 +87,11 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
       });
       const newVideo: IVideo = await video.save();
 
+      // send email to custodians with de url to report video
+      custodians.forEach(({ email }: {email: string}) => {
+        sendMail(email, `opcion para reportar el evento ${title}`, 'Puede reportar el evento en la siguiente url: ');
+      });
+
       // if deliveryDate is not null, make a cronjob to notify the event
       if (deliveryDate) {
         const cron = require('node-cron');
@@ -108,12 +115,13 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
       await User.findByIdAndUpdate(userId, {
         avaliableVideoTime: newAvaliableVideoTime.toFixed(2)
       });
+
+      blobStream.end(req?.file?.buffer);
+
       res.json({
         newVideo
       });
     });
-
-    blobStream.end(req.file.buffer);
   } catch (error) {
     console.log(error);
     res.status(500).json({

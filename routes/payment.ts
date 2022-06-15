@@ -1,11 +1,9 @@
 import { Router } from 'express';
 import { payment } from '../controllers/payments';
-const { validarJWT } = require('../middlewares');
+// const { validarJWT } = require('../middlewares');
 
 const router = Router();
 
-router.post('/', [
-  validarJWT
-], payment);
+router.post('/', payment);
 
 module.exports = router;
