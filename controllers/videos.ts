@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { IVideo } from '../interfaces';
-const fetch = require('node-fetch');
+// const fetch = require('node-fetch');
 const { Video, User } = require('../models');
 const { Storage } = require('@google-cloud/storage');
-// const { CloudTasksClient } = require('@google-cloud/tasks');
+const { CloudTasksClient } = require('@google-cloud/tasks');
 const { format } = require('util');
 const { getVideoDurationInSeconds } = require('get-video-duration');
-const { sendMail } = require('../helpers/send-mail');
+// const { sendMail } = require('../helpers/send-mail');
 
 export const getVideos = async (req: Request, res: Response) => {
   try {
@@ -48,10 +48,11 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
 
     const blob = bucket.file(title);
     const blobStream = blob.createWriteStream({
-      resumable: false
+      resumable: true
     });
 
     blobStream.on('error', (err: any) => {
+      console.log(err);
       next(err);
     });
 
@@ -88,12 +89,55 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
       const newVideo: IVideo = await video.save();
 
       // send email to custodians with de url to report video
+      /*
       custodians.forEach(({ email }: {email: string}) => {
         sendMail(email, `opcion para reportar el evento ${title}`, 'Puede reportar el evento en la siguiente url: ');
       });
+      */
 
       // if deliveryDate is not null, make a cronjob to notify the event
       if (deliveryDate) {
+        const client = new CloudTasksClient();
+        /* task google cloud */
+        const project = 'psiwy-352918';
+        const queue = 'my-queue';
+        const location = 'us-central1';
+        /*
+          const payload = {
+            id: newVideo.id
+          };
+          */
+        const payload = 'hello world';
+
+        // Construct the fully qualified queue name.
+        const parent = client.queuePath(project, location, queue);
+        const task = {
+          HttpRequest: {
+            httpMethod: 'POST',
+            url: 'http://localhost:8000/api/date',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: Buffer.from(payload).toString('base64'),
+            payloadType: 'http_request'
+          },
+          scheduleTime: { seconds: 0 },
+          payloadType: 'http_request'
+        };
+
+        task.scheduleTime = {
+          seconds: Date.now() / 1000
+        };
+
+        console.log('Sending task:');
+        // console.log(task);
+        // Send create task request.
+        const request = { parent, task };
+        const [response] = await client.createTask(request);
+        const name = response.name;
+        console.log(`Created task ${name}`);
+      }
+      /*
         const cron = require('node-cron');
         cron.schedule(`0 ${mins} ${hour} ${day} ${month} *`, () => {
           const params = {
@@ -108,7 +152,7 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
           };
           fetch(`http://localhost:${process.env.PORT}/api/date`, options);
         }, { scheduled: true, timezone: 'America/Buenos_Aires' });
-      }
+        */
 
       // update user new avaliableVideoTime
       const newAvaliableVideoTime = avaliableVideoTime - durationInMiliseconds;
@@ -116,12 +160,11 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
         avaliableVideoTime: newAvaliableVideoTime.toFixed(2)
       });
 
-      blobStream.end(req?.file?.buffer);
-
       res.json({
         newVideo
       });
     });
+    blobStream.end(req.file.buffer);
   } catch (error) {
     console.log(error);
     res.status(500).json({
