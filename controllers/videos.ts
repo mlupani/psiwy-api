@@ -154,7 +154,8 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
       // update user new avaliableVideoTime
       const newAvaliableVideoTime = avaliableVideoTime - durationInMiliseconds;
       await User.findByIdAndUpdate(userId, {
-        avaliableVideoTime: newAvaliableVideoTime.toFixed(2)
+        avaliableVideoTime: newAvaliableVideoTime.toFixed(2),
+        usedVideoTime: (user.usedVideoTime + durationInMiliseconds).toFixed(2)
       });
 
       res.json({
