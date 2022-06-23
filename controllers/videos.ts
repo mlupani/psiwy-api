@@ -61,7 +61,14 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
         `https://storage.googleapis.com/${bucket.name}/${blob.name}`
       );
 
-      duration = await getVideoDurationInSeconds(url);
+      console.log('url publica: ' + url);
+
+      try {
+        duration = await getVideoDurationInSeconds(url);
+      } catch (error) {
+        console.log(error);
+      }
+
       const durationInMiliseconds = duration * 1000;
       if (durationInMiliseconds > avaliableVideoTime) {
         await storage.bucket(process.env.GCLOUD_STORAGE_BUCKET).file(title).delete();
