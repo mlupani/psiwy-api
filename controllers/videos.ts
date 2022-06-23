@@ -76,6 +76,8 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
       const month = deliveryDate.substring(3, 5);
       const year = deliveryDate.substring(6, 10);
 
+      const newDate = new Date(year + '-' + month + '-' + day + 'T' + hour + ':' + mins + ':00.000Z');
+
       const video = new Video({
         authorID,
         duration: durationInMiliseconds.toFixed(2),
@@ -84,7 +86,7 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
         description,
         custodians,
         receptors,
-        deliveryDate: deliveryDate !== null ? year + '-' + month + '-' + day + 'T' + hour + ':' + mins + ':00.000Z' : null
+        deliveryDate: deliveryDate !== null ? newDate.toString() : null
       });
       const newVideo: IVideo = await video.save();
 
@@ -112,21 +114,16 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
         // Construct the fully qualified queue name.
         const parent = client.queuePath(project, location, queue);
         const task = {
-          HttpRequest: {
+          httpRequest: {
             httpMethod: 'POST',
-            url: 'http://localhost:8000/api/date',
+            url: `${process.env.PROJECT_URL}/api/date`,
             headers: {
               'Content-Type': 'application/json'
             },
-            body: Buffer.from(payload).toString('base64'),
-            payloadType: 'http_request'
+            body: Buffer.from(payload).toString('base64')
           },
-          scheduleTime: { seconds: 0 },
-          payloadType: 'http_request'
-        };
-
-        task.scheduleTime = {
-          seconds: Date.now() / 1000
+          // scheduleTime: { seconds: Math.floor(newDate.getTime() / 1000) + Date.now() / 1000 }
+          scheduleTime: { seconds: 10 + Date.now() / 1000 }
         };
 
         console.log('Sending task:');
