@@ -12,9 +12,7 @@ const multer = Multer({
 
 const router = Router();
 
-router.get('/', [
-  validarJWT
-], getVideos);
+router.get('/', getVideos);
 router.post('/', multer.single('file'), postVideos);
 router.put('/:id', [
   validarJWT
