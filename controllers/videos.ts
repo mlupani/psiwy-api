@@ -111,6 +111,8 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
           */
         const payload = 'hello world';
 
+        console.log('before send task:');
+
         // Construct the fully qualified queue name.
         const parent = client.queuePath(project, location, queue);
         const task = {
