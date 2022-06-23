@@ -8,6 +8,9 @@
     "build": "node dist/app.js",
     "dev": "nodemon -e ts  --exec \"npm run build\""
   },
+  "engines": {
+    "node": "16.x"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
