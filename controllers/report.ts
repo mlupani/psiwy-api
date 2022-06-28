@@ -4,7 +4,9 @@ const { sendMail } = require('../helpers/send-mail');
 
 export const report = async (req: Request, res: Response) => {
   try {
+    console.log(req.body);
     const bodyParsed = JSON.parse(req.body);
+    console.log({ bodyParsed });
     const { id } = bodyParsed;
     const video = await Video.findById(id);
     if (!video) {
