@@ -120,11 +120,7 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
           httpRequest: {
             httpMethod: 'POST',
             url: `${process.env.PROJECT_URL}/api/date`,
-            headers: {
-              'Content-type': 'application/application/json'
-            },
-            // body: Buffer.from(newVideo.id).toString('base64')
-            body: JSON.stringify({ id: newVideo.id })
+            body: Buffer.from(newVideo.id).toString('base64')
           },
           // scheduleTime: { seconds: Math.floor(newDate.getTime() / 1000) + Date.now() / 1000 }
           scheduleTime: { seconds: 10 + Date.now() / 1000 }
