@@ -15,3 +15,7 @@ export const getProducts = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const postProducts = async (req: Request, res: Response) => {
+  console.log(req.body);
+};

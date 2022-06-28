@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { report } from '../controllers/report';
+import { reportDate } from '../controllers/report';
 // const { validarJWT } = require('../middlewares');
 
 const router = Router();
 
-router.post('/', report);
+router.post('/', reportDate);
 
 module.exports = router;

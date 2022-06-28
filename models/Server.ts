@@ -2,7 +2,6 @@ import express, { Application } from 'express';
 import cors from 'cors';
 const { userRouter, productRouter, videoRouter, authRouter, paymentRouter, reportRouter } = require('../routes');
 const { dbConnection } = require('../database/config');
-const bodyParser = require('body-parser');
 
 class Server {
   private app: Application;
@@ -20,18 +19,23 @@ class Server {
     this.app = express();
     this.port = process.env.PORT || '8000';
 
-    dbConnection();
+    this.connectDB();
     this.middlewares();
     this.routes();
   }
 
+  async connectDB () {
+    try {
+      await dbConnection();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   middlewares () {
     this.app.use(cors());
-    this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());
-    this.app.use(bodyParser.urlencoded({
-      extended: true
-    }));
+    this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.static('public'));
   }
 

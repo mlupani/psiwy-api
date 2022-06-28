@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getProducts } from '../controllers/products';
+import { getProducts, postProducts } from '../controllers/products';
 const { validarJWT } = require('../middlewares');
 
 const router = Router();
@@ -7,5 +7,7 @@ const router = Router();
 router.get('/', [
   validarJWT
 ], getProducts);
+
+router.post('/', postProducts);
 
 module.exports = router;

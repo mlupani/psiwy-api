@@ -24,6 +24,7 @@ export const getVideos = async (req: Request, res: Response) => {
 
 export const postVideos = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    console.log(req.body);
     const { title, description, authorID, custodians, receptors, deliveryDate = null } = req.body;
     let url = '';
     let duration = 0;
