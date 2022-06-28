@@ -123,7 +123,7 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
             headers: {
               'Content-Type': 'application/json'
             },
-            body: Buffer.from(newVideo.id).toString('base64')
+            body: Buffer.from(JSON.stringify({ id: newVideo.id })).toString('base64')
           },
           // scheduleTime: { seconds: Math.floor(newDate.getTime() / 1000) + Date.now() / 1000 }
           scheduleTime: { seconds: 10 + Date.now() / 1000 }
