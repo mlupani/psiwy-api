@@ -18,6 +18,7 @@ export const report = async (req: Request, res: Response) => {
       sendMail(email, `Aviso de evento ${userName}`, `el video es ${video.title} y su id es ${video.id}, su url publica es ${video.url}`);
     });
     */
+
     sendMail('mlupani2@gmail.com', 'Aviso de evento', 'descripcion');
   } catch (error) {
     res.status(500).json({ message: error });
