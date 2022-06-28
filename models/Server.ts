@@ -35,6 +35,7 @@ class Server {
 
   middlewares () {
     this.app.use(cors());
+    this.app.enable('trust proxy');
     this.app.use(bodyParser.raw({ type: 'application/octet-stream' }));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
