@@ -28,6 +28,7 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
     let url = '';
     let duration = 0;
     const userId = '629b8e33602c1e936e51371a';
+    const MAX_SCHEDULE_LIMIT = 30 * 60 * 60 * 24;
 
     const user = await User.findById(userId);
     if (!user) {
@@ -114,8 +115,12 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
 
         console.log('before send task:');
 
+        const currentDate = new Date();
+
+        const dateDiffInSeconds = (newDate.getTime() - currentDate.getTime()) / 1000;
+        const dateInSeconds = Math.min(dateDiffInSeconds, MAX_SCHEDULE_LIMIT) + Date.now() / 1000;
+
         // Construct the fully qualified queue name.
-        console.log(newDate.getTime() / 1000);
         const parent = client.queuePath(project, location, queue);
         const task = {
           httpRequest: {
@@ -126,7 +131,7 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
             },
             body: Buffer.from(JSON.stringify({ id: newVideo.id })).toString('base64')
           },
-          scheduleTime: { seconds: Date.now() / 1000 - Math.floor(newDate.getTime() / 1000) + Date.now() / 1000 }
+          scheduleTime: { seconds: dateInSeconds }
           // scheduleTime: { seconds: 10 + Date.now() / 1000 }
         };
 
