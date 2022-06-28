@@ -4,6 +4,7 @@ const { sendMail } = require('../helpers/send-mail');
 
 export const reportDate = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    console.log(req.body);
     const { id } = req.body;
     const video = await Video.findById(id);
     if (!video) {

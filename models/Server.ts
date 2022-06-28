@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import cors from 'cors';
 const { userRouter, productRouter, videoRouter, authRouter, paymentRouter, reportRouter } = require('../routes');
 const { dbConnection } = require('../database/config');
+const bodyParser = require('body-parser');
 
 class Server {
   private app: Application;
@@ -36,6 +37,7 @@ class Server {
     this.app.use(cors());
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(bodyParser.raw({ type: 'application/octet-stream' }));
     this.app.use(express.static('public'));
   }
 
