@@ -24,7 +24,6 @@ export const getVideos = async (req: Request, res: Response) => {
 
 export const postVideos = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    console.log(req.body);
     const { title, description, authorID, custodians, receptors, deliveryDate = null } = req.body;
     let url = '';
     let duration = 0;
@@ -121,8 +120,11 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
           httpRequest: {
             httpMethod: 'POST',
             url: `${process.env.PROJECT_URL}/api/date`,
+            headers: {
+              'Content-type': 'application/application/json'
+            },
             // body: Buffer.from(newVideo.id).toString('base64')
-            body: Buffer.from('hello').toString('base64')
+            body: JSON.stringify({ id: newVideo.id })
           },
           // scheduleTime: { seconds: Math.floor(newDate.getTime() / 1000) + Date.now() / 1000 }
           scheduleTime: { seconds: 10 + Date.now() / 1000 }
