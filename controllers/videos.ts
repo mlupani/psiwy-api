@@ -126,9 +126,6 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
           httpRequest: {
             httpMethod: 'POST',
             url: `${process.env.PROJECT_URL}/api/date`,
-            headers: {
-              'Content-Type': 'application/json'
-            },
             body: Buffer.from(payload).toString('base64')
           },
           // scheduleTime: { seconds: Math.floor(newDate.getTime() / 1000) + Date.now() / 1000 }
