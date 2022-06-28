@@ -9,7 +9,7 @@
     "watch-node": "nodemon dist/index.js",
     "watch-ts": "tsc -w",
     "deploy": "git add . && git commit -m Heroku && git push heroku main",
-    "dev": "tsc && node dist/index.js"
+    "dev": "nodemon -e ts  --exec \"npm run start\""
   },
   "keywords": [],
   "author": "",
