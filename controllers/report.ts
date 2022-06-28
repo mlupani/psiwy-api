@@ -11,12 +11,10 @@ export const reportDate = async (req: Request, res: Response, next: NextFunction
         message: 'Video not found'
       });
     }
-    const { receptors } = video;
-
-    console.log({ video, receptors });
+    const { receptors, title, url } = video;
 
     receptors.forEach(({ email, userName }: {email: string, userName: string}) => {
-      sendMail(email, `Aviso de evento ${userName}`, `el video es ${video.title} y su id es ${video.id}, su url publica es ${video.url}`);
+      sendMail(email, `Aviso de evento ${userName}`, `el video es ${title} y su id es ${id}, su url publica es ${url}`);
     });
 
     res.json({
