@@ -115,6 +115,7 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
         console.log('before send task:');
 
         // Construct the fully qualified queue name.
+        console.log(newDate.getTime() / 1000);
         const parent = client.queuePath(project, location, queue);
         const task = {
           httpRequest: {
@@ -125,7 +126,7 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
             },
             body: Buffer.from(JSON.stringify({ id: newVideo.id })).toString('base64')
           },
-          scheduleTime: { seconds: Math.floor(newDate.getTime() / 1000) + Date.now() / 1000 }
+          scheduleTime: { seconds: Date.now() / 1000 - Math.floor(newDate.getTime() / 1000) + Date.now() / 1000 }
           // scheduleTime: { seconds: 10 + Date.now() / 1000 }
         };
 
