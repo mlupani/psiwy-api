@@ -112,10 +112,6 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
         const queue = 'my-queue';
         const location = 'us-central1';
 
-        const payload = {
-          id: newVideo.id
-        };
-
         console.log('before send task:');
 
         // Construct the fully qualified queue name.
@@ -124,7 +120,7 @@ export const postVideos = async (req: Request, res: Response, next: NextFunction
           httpRequest: {
             httpMethod: 'POST',
             url: `${process.env.PROJECT_URL}/api/date`,
-            body: Buffer.from(JSON.stringify(payload)).toString('base64')
+            body: Buffer.from(newVideo.id).toString('base64')
           },
           // scheduleTime: { seconds: Math.floor(newDate.getTime() / 1000) + Date.now() / 1000 }
           scheduleTime: { seconds: 10 + Date.now() / 1000 }
